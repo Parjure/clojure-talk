@@ -1,5 +1,9 @@
 (ns clojure-talk.core
-  (:require [clojure.data.json :as json]))
+  (:require [clojure.data.json :as json]
+            [clojure.spec.alpha :as spec]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.alpha :as s]))
 
 
 ;; strings
@@ -66,6 +70,40 @@
 ; lastnames: Ferro, Frost, Apone, Hicks, Hudson...
 ; rank: sergeant, private, commander, lieutenant, civilian
 ; civilian = no gun
+
+(spec/def :crew/gun (spec/keys :req-un [:gun/type
+                                        :gun/model
+                                        :gun/length]))
+
+(spec/def :crew/firstname string?)
+(spec/def :crew/lastname string?)
+(spec/def :crew/type #{:soldier :civilian})
+(spec/def :crew/rank #{"private" "lieutenant" "sergeant" "commander"})
+(spec/def :gun/type #{:flamethrower :powerloader :smartguns :pulse :knife :grenade :rifle :shotgun})
+(spec/def :gun/model (s/and string? #(< 10 (count %) 15)))
+(spec/def :gun/length (spec/int-in 1 200))
+(spec/def :crew/guns (spec/coll-of :crew/gun :max-count 3 :distinct true))
+
+(spec/def :crew/member (spec/keys :req-un [:crew/firstname
+                                           :crew/lastname
+                                           :crew/type]))
+
+(defmulti crew-type :type)
+
+
+(defmethod crew-type :civilian [_]
+  :crew/member)
+
+(defmethod crew-type :soldier [_]
+           (spec/merge :crew/member
+                       (spec/keys :req-un [:crew/rank
+                                           :crew/guns])))
+
+(s/def :crew/person (s/multi-spec crew-type :type))
+
+
+(gen/sample (spec/gen :crew/person) 25)
+
 
 
 ;; figwheel ?
