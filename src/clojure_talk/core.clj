@@ -44,9 +44,8 @@
 
 (get-in aliens-characters [1 :guns 0 :type])
 
-(def json-str (slurp "resources/aliens.json"))
+(def aliens-character-from-json (json/read-json (slurp "resources/aliens.json")))
 
-(def aliens-character-from-json (json/read-json json-str))
 (map :guns aliens-character-from-json)
 
 (defn has-weapon [weapon character]
