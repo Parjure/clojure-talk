@@ -32,15 +32,15 @@
 
 ;; nested collections
 (def aliens-characters [{:firstname "Ellen"
-                         :lastname "Ripley"
-                         :rank "Officer"
-                         :guns [{:type :flamethrower :model "M240A1"}
-                                {:type :pulse-rifle :model "M41A"}]}
+                         :lastname  "Ripley"
+                         :rank      "Officer"
+                         :guns      [{:type :flamethrower :model "M240A1"}
+                                     {:type :pulse-rifle :model "M41A"}]}
                         {:firstname "Mark"
-                         :lastname "Drake"
-                         :rank "Private First Class"
-                         :guns [{:type :smartgun :model "M56"}
-                                {:type :knife :length 10}]}])
+                         :lastname  "Drake"
+                         :rank      "Private First Class"
+                         :guns      [{:type :smartgun :model "M56"}
+                                     {:type :knife :length 10}]}])
 
 (get-in aliens-characters [1 :guns 0 :type])
 
@@ -48,15 +48,16 @@
 
 (map :guns aliens-character-from-json)
 
-(defn has-weapon [weapon character]
+(defn has-weapon
+  [weapon character]
   (let [guns (:guns character)]
     (some #(= (:type %) weapon) guns)))
 
 (has-weapon "knife" (second aliens-character-from-json))
 
 (->> aliens-character-from-json
-  (filter (partial has-weapon "knife"))
-  (map :lastname))
+     (filter (partial has-weapon "knife"))
+     (map :lastname))
 
 
 
