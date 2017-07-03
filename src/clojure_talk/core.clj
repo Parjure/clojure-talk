@@ -26,17 +26,11 @@
 #{"a" "set" "of" "words"}
 
 ;; functions
-(def greeter (fn [name] (println "Greetings," name)))
-(greeter "Boromir")
-
-;; in a one-liner
 (defn greeter [name] (println "Greetings," name))
 (greeter "Boromir")
 
 
 ;; nested collections
-
-
 (def aliens-characters [{:firstname "Ellen"
                          :lastname "Ripley"
                          :rank "Officer"
@@ -61,9 +55,19 @@
 
 (has-weapon "knife" (second aliens-character-from-json))
 
-(has-weapon "knife" {:firstname "Mark",
-                     :lastname "Drake",
-                     :rank "Private",
-                     :guns [{:type "smartgun", :model "M56"} {:type "knife", :length "10"}]})
+(->>
+  (filter (partial has-weapon "knife") aliens-character-from-json)
+  (map :lastname))
 
-(filter (partial has-weapon "knife") aliens-character-from-json)
+
+
+;; clojure.spec (generate fictional characters)
+; guns : smartguns, pulse rifle, flamethrower, knife, shotgun, grenade, powerloader
+; lastnames: Ferro, Frost, Apone, Hicks, Hudson...
+; rank: sergeant, private, commander, lieutenant, civilian
+; civilian = no gun
+
+
+;; figwheel ?
+
+
