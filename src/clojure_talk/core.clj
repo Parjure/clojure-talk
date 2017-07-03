@@ -54,8 +54,8 @@
 
 (has-weapon "knife" (second aliens-character-from-json))
 
-(->>
-  (filter (partial has-weapon "knife") aliens-character-from-json)
+(->> aliens-character-from-json
+  (filter (partial has-weapon "knife"))
   (map :lastname))
 
 
