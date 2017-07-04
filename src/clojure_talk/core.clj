@@ -75,18 +75,23 @@
                                         :gun/model
                                         :gun/length]))
 
+
 (spec/def :crew/firstname string?)
 (spec/def :crew/lastname string?)
 (spec/def :crew/type #{:soldier :civilian})
 (spec/def :crew/rank #{"private" "lieutenant" "sergeant" "commander"})
 (spec/def :gun/type #{:flamethrower :powerloader :smartguns :pulse :knife :grenade :rifle :shotgun})
 (spec/def :gun/model (s/and string? #(< 10 (count %) 15)))
-(spec/def :gun/length (spec/int-in 1 200))
-(spec/def :crew/guns (spec/coll-of :crew/gun :max-count 3 :distinct true))
+(spec/def :gun/length (spec/int-in 10 200))
+(spec/def :crew/guns (spec/coll-of :crew/gun :min-count 1 :max-count 3 :distinct true))
 
 (spec/def :crew/member (spec/keys :req-un [:crew/firstname
                                            :crew/lastname
                                            :crew/type]))
+
+(spec/def :crew/soldier (spec/merge :crew/member
+                                    (spec/keys :req-un [:crew/rank
+                                             :crew/guns])))
 
 (defmulti crew-type :type)
 
@@ -95,9 +100,7 @@
   :crew/member)
 
 (defmethod crew-type :soldier [_]
-           (spec/merge :crew/member
-                       (spec/keys :req-un [:crew/rank
-                                           :crew/guns])))
+           (spec/merge :crew/member :crew/soldier))
 
 (s/def :crew/person (s/multi-spec crew-type :type))
 
@@ -105,6 +108,11 @@
 (gen/sample (spec/gen :crew/person) 25)
 
 
+(s/fdef has-weapon
+        :args (s/cat :gun :gun/type :person :crew/soldier)
+        :ret boolean?)
+
+(s/exercise-fn `has-weapon 25)
 
 ;; figwheel ?
 
